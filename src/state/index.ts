@@ -1,15 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { UserDetail } from "./types";
+import { UserInterface } from "./types";
 
-interface User {
-    user: UserDetail | null;
-    token: unknown;
-    playlists: unknown[],
-    followers: unknown[],
-    following: unknown[]
-}
-
-const initialState: User = {
+const initialState: UserInterface = {
     user: null,
     token: null,
     playlists: [],

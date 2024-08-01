@@ -14,5 +14,13 @@ export interface UserDetail {
     userType: 'user' | 'artist';
     stageName: string;
     picturePath: string;
-  }
+}
+
+export interface UserInterface {
+    user: UserDetail | null;
+    token: unknown;
+    playlists: unknown[],
+    followers: unknown[],
+    following: unknown[]
+}
   
