@@ -1,11 +1,9 @@
-import { Button } from "@/components/ui/button";
-import { ModeToggle } from "@/components/mode-toggle";
+import AuthForm from "./Form"
 
 const LoginPage = () => {
     return (
         <>
-            <ModeToggle/>
-            <Button>Hello there</Button>
+            <AuthForm/>
             <div>Loginpage</div>
         </>
     )

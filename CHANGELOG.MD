@@ -1,3 +1,14 @@
+## [SCRUM-20] - [1.3.0] - (2024-08-06)
+- add login page
+- add Collapsible component
+- add Form component
+- add input component
+- add toast component
+- add label component
+- add popover component
+- add scroll area component
+- add select
+
 ## [SCRUM-26] - [1.2.0] - (2024-08-01)
 - add navbar layout
 - add avatar component

@@ -32,11 +32,11 @@
   }
 
   .dark {
-    --background: 240 10% 3.9%;
+    --background: 240 10% 5.9%;
     --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
+    --card: 240 10% 5.9%;
     --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
+    --popover: 240 10% 5.9%;
     --popover-foreground: 0 0% 98%;
     --primary: 0 0% 98%;
     --primary-foreground: 240 5.9% 10%;
@@ -66,4 +66,27 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.rdp-vhidden {
+  @apply hidden;
+}
+
+body {
+	background: linear-gradient(-45deg, #c3b0f7, #e73c7e, #23a6d5, #23d5ab);
+	background-size: 400% 400%;
+	animation: gradient 30s ease infinite;
+	height: 100vh;
+}
+
+@keyframes gradient {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
 }
