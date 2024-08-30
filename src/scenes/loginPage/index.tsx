@@ -4,7 +4,6 @@ const LoginPage = () => {
     return (
         <>
             <AuthForm/>
-            <div>Loginpage</div>
         </>
     )
 }

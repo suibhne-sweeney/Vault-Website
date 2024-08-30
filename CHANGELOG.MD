@@ -1,3 +1,9 @@
+## [1.4.0] - (2024-08-30)
+- add sign-up page
+- add file upload component
+- add progress bar
+- change login page layout
+
 ## [SCRUM-20] - [1.3.0] - (2024-08-06)
 - add login page
 - add Collapsible component
