@@ -5,7 +5,7 @@ import { PlaylistArtwork } from "@/components/ui/playlist-artwork"
 import { Separator } from "@/components/ui/separator"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 
-const playlist = [
+const playlists = [
   {
     name: "React Rendezvous",
     artist: "Ethan Byte",
@@ -68,7 +68,7 @@ const HomePage = () => {
                   <div className="relative">
                     <ScrollArea>
                       <div className="flex space-x-4 pb-4">
-                        {playlist.map((album) => (
+                        {playlists.map((album) => (
                           <PlaylistArtwork
                             key={album.name}
                             playlist={album}
@@ -94,7 +94,7 @@ const HomePage = () => {
                   <div className="relative">
                     <ScrollArea>
                       <div className="flex space-x-4 pb-4">
-                        {playlist.slice(0, 4).map((album) => (
+                        {playlists.slice(0, 4).map((album) => (
                           <PlaylistArtwork
                             key={album.name}
                             playlist={album}

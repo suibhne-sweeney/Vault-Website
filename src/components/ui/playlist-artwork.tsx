@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils"
 interface PlaylistArtworkProps {
   playlist: {
     name: string
-    creator: string
+    artist: string
     cover: string
   }
   aspectRatio?: "portrait" | "round"
@@ -37,7 +37,7 @@ export function PlaylistArtwork({
           <div className={`overflow-hidden ${aspectRatio === 'portrait' ? "rounded-md" : "rounded-full"}`} >
             <img
               src={playlist.cover}
-              alt={`${playlist.name} by ${playlist.creator}`}
+              alt={`${playlist.name} by ${playlist.artist}`}
               width={width}
               height={height}
               className={cn(
@@ -89,7 +89,7 @@ export function PlaylistArtwork({
       </ContextMenu>
       <div className="space-y-1 text-sm">
         <h3 className="font-medium leading-none">{playlist.name}</h3>
-        <p className="text-xs text-muted-foreground">{playlist.creator}</p>
+        <p className="text-xs text-muted-foreground">{playlist.artist}</p>
       </div>
     </div>
   )
