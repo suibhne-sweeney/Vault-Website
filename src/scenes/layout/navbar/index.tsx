@@ -32,10 +32,10 @@ const Navbar = () => {
     const fullName = `${user?.firstName} ${user?.lastName}`
 
     return (
-        <nav className="absolute w-full flex justify-between items-center p-4 z-10">
+        <nav className="w-full flex justify-between items-center p-4 z-10">
             <div className="flex items-center gap-1">
-              <Button className="mx-1" variant={"outline"} size={"icon"}><ChevronLeft/></Button>
-              <Button className="mx-1" variant={"outline"} size={"icon"}><ChevronRight/></Button>
+              <Button className="mx-1" variant={"outline"} size={"icon"} onClick={() => navigate(-1)}><ChevronLeft/></Button>
+              <Button className="mx-1" variant={"outline"} size={"icon"} onClick={() => navigate(1)}><ChevronRight/></Button>
             </div>
             <div className="flex items-center gap-2">
               <Badge variant={"default"} ><a href="#">Explore Premium</a></Badge>

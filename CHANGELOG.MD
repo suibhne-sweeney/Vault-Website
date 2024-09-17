@@ -1,3 +1,9 @@
+## [1.5.0] - (2024-09-17)
+- add playlistArt component
+- add tabs component
+- add sidebar layout
+- add context menu
+
 ## [1.4.0] - (2024-08-30)
 - add sign-up page
 - add file upload component
