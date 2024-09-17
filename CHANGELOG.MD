@@ -1,3 +1,7 @@
+## [1.5.1] - (2024-09-17)
+- remove React.StrictMode
+- update sidebar to call playlist api
+
 ## [1.5.0] - (2024-09-17)
 - add playlistArt component
 - add tabs component

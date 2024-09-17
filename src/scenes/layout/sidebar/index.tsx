@@ -1,10 +1,25 @@
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
-import state, { setPlaylists } from "@/state";
+import { setPlaylists } from "@/state";
 import { UserInterface } from "@/state/types";
 import { Play, LayoutGrid, Radio, ListMusic, Mic2, Music, Users, Disc, PlaySquare } from "lucide-react"
+import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+
+interface Playlist {
+  _id: string;           
+  name: string;          
+  description: string;    
+  user: string;           
+  image: string;         
+  songs: string[];        
+  visibility: "public" | "private"; 
+  likes: Record<string, boolean>;  
+  createdAt: string;      
+  updatedAt: string;      
+  __v: number;            
+}
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -12,7 +27,7 @@ const Sidebar = ({ className }: SidebarProps) => {
   const dispatch = useDispatch();
   const userId = useSelector((state: UserInterface) => state.user?._id);
   const token = useSelector((state: UserInterface) => state.token);
-  const playlists = useSelector((state: UserInterface) => state.playlists)
+  const playlists = useSelector((state: UserInterface) => state.playlists as Playlist[]) 
 
   const getPlaylists = async () => {
     const response = await fetch(`http://localhost:3001/api/playlists/all/user/${userId}`, {
@@ -23,12 +38,13 @@ const Sidebar = ({ className }: SidebarProps) => {
     const data = await response.json(); // Convert the response to JSON
     dispatch(setPlaylists({playlists: data}))
   };
-
-  getPlaylists();
   
+  useEffect(() => {
+    getPlaylists();
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) 
   
-
   return (
     <div className={cn("pb-12", className)}>
       <div className="space-y-4 py-4">
@@ -90,7 +106,7 @@ const Sidebar = ({ className }: SidebarProps) => {
                   variant="ghost"
                   className="w-full justify-start font-normal"
                 >
-                  <PlaySquare className="mr-2 h-4 w-4" />
+                  {playlist.image ? <PlaySquare className="mr-2 h-4 w-4" /> : <img src={playlist.image} alt="Playlist" className="mr-2 h-6 w-6"/>}
                   {playlist.name}
                 </Button>
               ))}
