@@ -1,3 +1,8 @@
+## [1.6.0] - (2024-09-19)
+- add playlist page
+- edits to css file
+- add layout
+
 ## [1.5.1] - (2024-09-17)
 - remove React.StrictMode
 - update sidebar to call playlist api

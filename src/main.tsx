@@ -32,7 +32,7 @@ const store = configureStore({
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistStore(store)}>
-        <App />
+          <App />
       </PersistGate>
     </Provider>
 )

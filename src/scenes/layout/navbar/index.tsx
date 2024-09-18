@@ -1,13 +1,10 @@
 import { setLogout } from "@/state";
-import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { UserInterface } from "@/state/types";
-import { useMediaQuery } from "@/components/mediaQuery";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Download, User, CreditCard, Settings, Keyboard, LogOut } from 'lucide-react';
-import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   Avatar,

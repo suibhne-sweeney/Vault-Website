@@ -5,6 +5,7 @@ import ProfilePage from "./scenes/profilePage";
 import { ThemeProvider } from "./components/theme-provider";
 import { useSelector } from "react-redux";
 import { UserInterface } from "./state/types";
+import PlaylistPage from "./scenes/playlistPage";
 
 
 
@@ -18,6 +19,7 @@ function App() {
             <Route path="/" element={<LoginPage />} />
             <Route path="/home" element={isAuth ? <HomePage /> : <Navigate to="/" />} />
             <Route path="/profile/:userId" element={isAuth ? <ProfilePage /> : <Navigate to="/" />}  />
+            <Route path="/playlist" element={isAuth ? <PlaylistPage /> : <Navigate to="/" />} />
           </Routes>
         </BrowserRouter>
       </div>
