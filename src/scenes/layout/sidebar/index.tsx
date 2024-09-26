@@ -6,6 +6,7 @@ import { UserInterface } from "@/state/types";
 import { Play, LayoutGrid, Radio, ListMusic, Mic2, Music, Users, Disc, PlaySquare } from "lucide-react"
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 interface Playlist {
   _id: string;           
@@ -28,6 +29,7 @@ const Sidebar = ({ className }: SidebarProps) => {
   const userId = useSelector((state: UserInterface) => state.user?._id);
   const token = useSelector((state: UserInterface) => state.token);
   const playlists = useSelector((state: UserInterface) => state.playlists as Playlist[]) 
+  const navigate = useNavigate();
 
   const getPlaylists = async () => {
     const response = await fetch(`http://localhost:3001/api/playlists/all/user/${userId}`, {
@@ -105,6 +107,7 @@ const Sidebar = ({ className }: SidebarProps) => {
                   key={`${playlist}-${i}`}
                   variant="ghost"
                   className="w-full justify-start font-normal"
+                  onClick={() => navigate(`/playlist/${playlist._id}`)}
                 >
                   {playlist.image ? <PlaySquare className="mr-2 h-4 w-4" /> : <img src={playlist.image} alt="Playlist" className="mr-2 h-6 w-6"/>}
                   {playlist.name}

@@ -1,6 +1,7 @@
 import React, { ReactNode } from "react";
 import Navbar from "./navbar";
 import Sidebar from "./sidebar";
+import PlayBar from "./playbar/index.tsx";
 
 interface LayoutProps{
   children: ReactNode;
@@ -16,9 +17,9 @@ const Layout: React.FC<LayoutProps> = ({children}) => {
         <div className="col-span-5">
           <Navbar />
           {children}
+          <PlayBar />
         </div>
       </div>
-
     </>
   )
 }

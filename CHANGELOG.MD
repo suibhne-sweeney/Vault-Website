@@ -1,3 +1,8 @@
+## [1.7.0] - (2024-09-26)
+- add slider component
+- add playbar layout
+- add route to playlists
+
 ## [1.6.0] - (2024-09-19)
 - add playlist page
 - edits to css file

@@ -2,21 +2,48 @@ import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { PlayIcon, ShuffleIcon, MoreHorizontalIcon } from "lucide-react"
 import Layout from "../layout/layout"
+import { useParams } from "react-router-dom"
+import { useSelector } from "react-redux"
+import { PlaylistInterface, UserInterface } from "@/state/types"
+import { useEffect, useState } from "react"
 
-const playlistSongs = [
-  { id: 1, title: "Midnight Serenade", artist: "Luna Skye", album: "Nocturnal Whispers", duration: "3:45" },
-  { id: 2, title: "Neon Dreams", artist: "Cyber Punk", album: "Digital Horizons", duration: "4:20" },
-  { id: 3, title: "Echoes of You", artist: "The Resonants", album: "Harmonic Memories", duration: "3:56" },
-  { id: 4, title: "Stellar Journey", artist: "Cosmic Voyagers", album: "Interstellar Odyssey", duration: "5:12" },
-  { id: 5, title: "Rainy Day Blues", artist: "Melancholy Melodies", album: "Urban Reflections", duration: "4:08" },
-  { id: 6, title: "Electric Pulse", artist: "Voltage", album: "Circuit Breaker", duration: "3:30" },
-  { id: 7, title: "Whispers in the Wind", artist: "Nature's Voice", album: "Organic Rhythms", duration: "4:45" },
-  { id: 8, title: "Retro Groove", artist: "Vintage Vibes", album: "Throwback Thursdays", duration: "3:22" },
-  { id: 9, title: "Sunset Serenade", artist: "Horizon's Edge", album: "Twilight Tales", duration: "4:17" },
-  { id: 10, title: "Urban Jungle", artist: "City Sounds", album: "Concrete Jungle", duration: "3:59" },
-]
 
 const PlaylistPage = () => {
+  const { id } = useParams();
+  const userId = useSelector((state: UserInterface) => state.user?._id);
+  const token = useSelector((state: UserInterface) => state.token);
+  const [playlist, setPlaylist] = useState<PlaylistInterface | null>(null); // you use this when you want to use data from the api but cant use dispatch and then one of the states i have in local storage
+  const [loading, setLoading] = useState(true);  // Loading state
+
+  const getPlaylist = async () => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/playlists/${id}`, {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json();
+      setPlaylist(data);  // Update state with fetched data
+    } catch (error) {
+      console.log("Error fetching playlist:", error);
+    } finally {
+      setLoading(false);  // Stop loading when data is fetched
+    }
+  }
+
+  useEffect(() => {
+    getPlaylist();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, token])
+  
+  if(loading) return (
+    <div className="flex flex-col min-h-screen justify-center items-center">
+      <div className="inline-block h-16 w-16 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
+        <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">Loading...</span>
+      </div>
+      <p className="mt-2">Loading...</p>
+    </div>
+  )
+
   return (
     <Layout>
       <div className="flex flex-col h-[100%] bg-background overflow-y-hidden ">
@@ -31,8 +58,8 @@ const PlaylistPage = () => {
                 width="256"
               />
               <div className="flex flex-col items-center md:items-start">
-                <h1 className="text-3xl font-bold mb-2">My Awesome Playlist</h1>
-                <p className="text-muted-foreground mb-4">Created by Music Lover</p>
+                <h1 className="text-3xl font-bold mb-2">{playlist?.name}</h1>
+                <p className="text-muted-foreground mb-4">{playlist?.description}</p>
                 <div className="flex items-center gap-4">
                   <Button size="lg" className="rounded-full">
                     <PlayIcon className="mr-2 h-5 w-5" />
@@ -45,23 +72,23 @@ const PlaylistPage = () => {
               </div>
             </div>
             <ScrollArea className="h-[calc(100vh-24rem)]">
-              <div className="space-y-4">
-                {playlistSongs.map((song, index) => (
-                  <div key={song.id} className="flex items-center gap-4 group">
+              <div className="space-y-4 mr-4">
+                {playlist?.songs.map((song, index) => (
+                  <div key={song._id} className="flex items-center gap-4 group">
                     <div className="w-8 text-center text-muted-foreground">{index + 1}</div>
                     <img
-                        alt={`${song.album} cover`}
+                        alt={`${song.image} cover`}
                         className="rounded object-cover w-12 h-12"
                         height="48"
                         src="/placeholder.svg?height=48&width=48"
                         width="48"
                     />
                     <div className="flex-1 min-w-0">
-                      <div className="font-medium truncate">{song.title}</div>
-                      <div className="text-sm text-muted-foreground truncate">{song.artist}</div>
+                      <div className="font-medium truncate">{song.name}</div> {/* this is for song name */}
+                      <div className="text-sm text-muted-foreground truncate">{song.artist}</div> {/*  name */}
                     </div>
-                    <div className="text-sm text-muted-foreground hidden md:block truncate">{song.album}</div>
-                    <div className="text-sm text-muted-foreground">{song.duration}</div>
+                    <div className="text-sm text-muted-foreground hidden md:block truncate">idk</div> {/* this is for what playlist or albumn the song came from */}
+                    <div className="text-sm text-muted-foreground">0.00</div>
                     <Button
                         variant="ghost"
                         size="icon"

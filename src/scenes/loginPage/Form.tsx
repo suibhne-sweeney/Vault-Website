@@ -110,7 +110,9 @@ export default function AuthenticateForm() {
     const signup = async (values: z.infer<typeof schema>) => {
       const formData = new FormData();
       for(const value in values){
-        formData.append(value, values[value])
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        formData.append(value, values[value]) 
       }
       formData.append("picture", files[0]);
       formData.append("picturePath", files[0].name);
