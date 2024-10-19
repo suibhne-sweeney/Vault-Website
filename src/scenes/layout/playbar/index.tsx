@@ -1,6 +1,15 @@
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
-import { Heart, MoreHorizontal, Play, Repeat, Shuffle, SkipBack, SkipForward, Volume2 } from "lucide-react"
+import { 
+    Heart, 
+    MoreHorizontal, 
+    Play, 
+    Repeat, 
+    Shuffle, 
+    SkipBack, 
+    SkipForward, 
+    Volume2 
+} from "lucide-react"
 
 export default function PlayBar() {
   return (
