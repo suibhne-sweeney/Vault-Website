@@ -1,3 +1,20 @@
+## [1.8.0] - (2024-12-15)
+- add command component
+- add dialog component
+- change playlist-artwork component call getPlaylist api
+- change popover component removed depedency on dialog component
+- add profile-picture component
+- add song-artwork component
+- change toaster component updated path to hook folder
+- add use-script hook
+- add use-toast hook
+- add audioPlayer lib
+- add playState lib
+- update index profilePage
+- add FormSongUpload profilePage
+- add index songPage
+- change layout
+
 ## [1.7.0] - (2024-09-26)
 - add slider component
 - add playbar layout

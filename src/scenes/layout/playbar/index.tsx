@@ -10,10 +10,12 @@ import {
     SkipForward, 
     Volume2 
 } from "lucide-react"
+import AudioPlayer from "@/lib/audioPlayer/audioPlayer"
+import { PlaybackState } from "@/lib/audioPlayer/playState"
 
 export default function PlayBar() {
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-background border-t">
+    <div className="bg-background border-t">
       <div className="container flex items-center h-20">
         {/* Album art and song info */}
         <div className="flex items-center space-x-4 w-1/4">
@@ -40,7 +42,7 @@ export default function PlayBar() {
             <Button variant="ghost" size="icon">
               <SkipBack className="h-5 w-5" />
             </Button>
-            <Button size="icon" className="bg-primary text-primary-foreground hover:bg-primary/20">
+            <Button onClick={() => AudioPlayer("Ariana Grande - positions (official video).mp3", PlaybackState.play)} size="icon" className="bg-primary text-primary-foreground hover:bg-primary/20">
               <Play className="h-5 w-5" />
             </Button>
             <Button variant="ghost" size="icon">

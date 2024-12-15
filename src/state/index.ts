@@ -24,14 +24,14 @@ export const authSlice = createSlice({
         },
         setFollowers: (state, action) => {
             if(state.user){
-                state.user.followers = action.payload.followers
+                state.followers = action.payload.followers
             }else{
                 console.error("user followers non-existent");
             }
         },
         setFollowing: (state, action) => {
             if(state.user){
-                state.user.following = action.payload.following
+                state.following = action.payload.following
             }else{
                 console.error("user following non-existent");
             }

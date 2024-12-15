@@ -48,14 +48,14 @@ const registerSchema = z.object({
   lastName: z.string()
     .min(2, { message: "Last name must be at least 2 characters long." })
     .max(30, { message: "Last name must be less than 30 characters long." }),
-  dateOfBirth: z.coerce.date(),
+  dateOfBirth: z.coerce.date(), // i need to make it so it checks if your acc 18 years of age lol
   gender: z.enum(["Male", "Female", "None"], {
     message: "Gender must be one of the following: Male, Female, None."
   }),
   picture: z.string()
 });
 
-// Define schema for login
+// define schema for login
 const loginSchema = registerSchema.pick({
   email: true,
   password: true,

@@ -10,13 +10,13 @@ import {
 } from "@/components/ui/context-menu"
 import { PlusCircle, Music, Radio, Heart, Share2 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useDispatch, useSelector } from "react-redux"
+import { PlaylistInterface, UserInterface } from "@/state/types"
+import { setPlaylists } from "@/state"
+import { useEffect } from "react"
 
 interface PlaylistArtworkProps {
-  playlist: {
-    name: string
-    artist: string
-    cover: string
-  }
+  playlist: PlaylistInterface,
   aspectRatio?: "portrait" | "round"
   width?: number
   height?: number
@@ -30,14 +30,33 @@ export function PlaylistArtwork({
   height,
   className,
 }: PlaylistArtworkProps) {
+    const dispatch = useDispatch();
+    const userId = useSelector((state: UserInterface) => state.user?._id);
+    const token = useSelector((state: UserInterface) => state.token);
+    const playlists = useSelector((state: UserInterface) => state.playlists as PlaylistInterface[]) 
+
+    const getPlaylists = async () => {
+    const response = await fetch(`http://localhost:3001/api/playlists/all/user/${userId}`, {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  
+    const data = await response.json(); // Convert the response to JSON
+    dispatch(setPlaylists({playlists: data}))
+  };
+  useEffect(() => {
+    getPlaylists();
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) 
   return (
     <div className={cn("space-y-3", className)}>
       <ContextMenu>
         <ContextMenuTrigger>
           <div className={`overflow-hidden ${aspectRatio === 'portrait' ? "rounded-md" : "rounded-full"}`} >
             <img
-              src={playlist.cover}
-              alt={`${playlist.name} by ${playlist.artist}`}
+              src={playlist.image}
+              alt={`${playlist.name} by ${playlist.name}`}
               width={width}
               height={height}
               className={cn(
@@ -48,10 +67,6 @@ export function PlaylistArtwork({
           </div>
         </ContextMenuTrigger>
         <ContextMenuContent className="w-40">
-          <ContextMenuItem>
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Add to Library
-          </ContextMenuItem>
           <ContextMenuSub>
             <ContextMenuSubTrigger>
               <PlusCircle className="mr-2 h-4 w-4" />
@@ -63,10 +78,11 @@ export function PlaylistArtwork({
                 New Playlist
               </ContextMenuItem>
               <ContextMenuSeparator />
-              <ContextMenuItem>
-                <Music className="mr-2 h-4 w-4" />
-                My Playlist
-              </ContextMenuItem>
+                {playlists.map((song) => 
+                  <ContextMenuItem><Music className="mr-2 h-4 w-4" />
+                    {song.name}
+                  </ContextMenuItem>
+                )}
             </ContextMenuSubContent>
           </ContextMenuSub>
           <ContextMenuSeparator />
@@ -89,7 +105,7 @@ export function PlaylistArtwork({
       </ContextMenu>
       <div className="space-y-1 text-sm">
         <h3 className="font-medium leading-none">{playlist.name}</h3>
-        <p className="text-xs text-muted-foreground">{playlist.artist}</p>
+        <p className="text-xs text-muted-foreground">{playlist.user.firstName}</p>
       </div>
     </div>
   )

@@ -40,13 +40,13 @@ const Navbar = () => {
               <ModeToggle/>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Avatar><AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" /><AvatarFallback>CN</AvatarFallback></Avatar>
+                  <Avatar><AvatarImage src={`http://localhost:3001/assets/${user?.picturePath}`} alt="@shadcn" /><AvatarFallback>CN</AvatarFallback></Avatar>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56">
                   <DropdownMenuLabel>{fullName}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem className="cursor-pointer" onClick={() => navigate(`/profile/${user?._id}`)}>
                       <User className="mr-2 h-4 w-4" />
                       <span>Profile</span>
                     </DropdownMenuItem>

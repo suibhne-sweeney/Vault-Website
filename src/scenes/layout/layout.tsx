@@ -1,27 +1,32 @@
 import React, { ReactNode } from "react";
 import Navbar from "./navbar";
 import Sidebar from "./sidebar";
-import PlayBar from "./playbar/index.tsx";
+import PlayBar from "./playbar/index";
+import { Toaster } from "@/components/ui/toaster";
 
-interface LayoutProps{
+interface LayoutProps {
   children: ReactNode;
 }
 
-const Layout: React.FC<LayoutProps> = ({children}) => {
-  return(
-    <>
-      <div className="grid grid-cols-6 h-screen">
-        <div className="col-span-1 border-x">
+const Layout: React.FC<LayoutProps> = ({ children }) => {
+  return (
+    <div className="flex flex-col h-screen">
+      <div className="flex flex-1 overflow-hidden">
+        <aside className="w-[200px] hidden md:block border-r">
           <Sidebar />
-        </div>
-        <div className="col-span-5">
+        </aside>
+        <main className="flex-1 flex flex-col overflow-hidden">
           <Navbar />
-          {children}
-          <PlayBar />
-        </div>
+          <div className="flex-1 overflow-y-auto custom-scrollbar">
+            {children}
+          </div>
+          <Toaster />
+        </main>
       </div>
-    </>
-  )
-}
+      <PlayBar />
+    </div>
+  );
+};
 
 export default Layout;
+
