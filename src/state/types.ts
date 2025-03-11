@@ -8,7 +8,7 @@ export interface UserDetail {
     gender: 'Male' | 'Female' | 'None';
     likedSongs: string[]; 
     playlists: PlaylistInterface[]; 
-    likedPlaylists: string[]; 
+    likedPlaylists: PlaylistInterface[]; 
     followers: string[]; 
     following: string[]; 
     userType: 'user' | 'artist';
@@ -19,9 +19,14 @@ export interface UserDetail {
 export interface UserInterface {
     user: UserDetail | null;
     token: string | null;
-    playlists: unknown[],
-    followers: unknown[],
-    following: unknown[]
+    playlists: PlaylistInterface[],
+    followers: [],
+    following: [],
+    likedPlaylists: PlaylistInterface[],
+    likedSongs: SongInterface[],
+    queue: SongInterface[],
+    currentSong: SongInterface | null
+    songOriginId: string | null,
 }
 
 export interface PlaylistInterface {
@@ -36,7 +41,7 @@ export interface PlaylistInterface {
     image: string,
     songs: SongInterface[],
     visibility: "public" | "private",
-    likes: boolean[],
+    likes: Record<string, boolean>,
     collectionType: "playlist" | "album"
 } 
 

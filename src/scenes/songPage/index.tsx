@@ -9,10 +9,12 @@ const SongPage = () => {
   const token = useSelector((state: UserInterface) => state.token);
   const [song, setSong] = useState<SongInterface | null>(null);
   const [loading, setLoading] = useState(true);
+  const SERVER_URI = import.meta.env.VITE_SERVER_URI;
+
 
   const getSong = async () => {
     try {
-      const response = await fetch(`http://localhost:3001/api/songs/${songId}`, {
+      const response = await fetch(`${SERVER_URI}/api/songs/${songId}`, {
         method: "GET",
         headers: {Authorization: `Bearer ${token}`},
       });
@@ -30,7 +32,7 @@ const SongPage = () => {
   useEffect(() => {
     getSong();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [songId])
 
   if(loading){
     return (

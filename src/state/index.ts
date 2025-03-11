@@ -6,8 +6,12 @@ const initialState: UserInterface = {
     token: null,
     playlists: [],
     followers: [],
-    following: []
-
+    following: [],
+    queue: [],
+    likedPlaylists: [],
+    likedSongs: [],
+    currentSong: null,
+    songOriginId: null
 } 
 
 export const authSlice = createSlice({
@@ -38,9 +42,26 @@ export const authSlice = createSlice({
         },
         setPlaylists: (state, action) => {
             state.playlists = action.payload.playlists;
+        },
+        setQueueState: (state, action) => {
+            state.queue = action.payload.queue;
+            state.currentSong = action.payload.currentSong;
+            state.songOriginId = action.payload.songOriginId;
+        },
+        setCurrentSongState: (state, action) => {
+            state.currentSong = action.payload.currentSong;
+        },
+        setSongOriginIdState: (state, action) => {
+            state.songOriginId = action.payload.songOriginId;
+        },
+        setLikedSongs: (state, action) => {
+            state.likedSongs = action.payload.likedSongs;
+        },
+        setLikedPlaylists: (state, action) => {
+            state.likedPlaylists = action.payload.likedPlaylists;
         }
     }
 })
 
-export const { setFollowers, setFollowing, setLogin, setLogout, setPlaylists } = authSlice.actions;
+export const { setFollowers, setFollowing, setLogin, setLogout, setPlaylists, setQueueState, setCurrentSongState, setSongOriginIdState, setLikedSongs, setLikedPlaylists } = authSlice.actions;
 export default authSlice.reducer

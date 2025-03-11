@@ -25,7 +25,7 @@ const Navbar = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const user = useSelector((state: UserInterface) => state.user);
-
+    const SERVER_URI = import.meta.env.VITE_SERVER_URI;
     const fullName = `${user?.firstName} ${user?.lastName}`
 
     return (
@@ -36,11 +36,11 @@ const Navbar = () => {
             </div>
             <div className="flex items-center gap-2">
               <Badge variant={"default"} ><a href="#">Explore Premium</a></Badge>
-              <Badge variant={"default"}><a href="#"><Download className="h-4 inline-block"/>Install App</a></Badge>
+              <Badge variant={"default"}><a href="#"><Download className="h-[16px] w-[16px] inline-block mr-2"/>Install App</a></Badge>
               <ModeToggle/>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Avatar><AvatarImage src={`http://localhost:3001/assets/${user?.picturePath}`} alt="@shadcn" /><AvatarFallback>CN</AvatarFallback></Avatar>
+                  <Avatar><AvatarImage src={`${SERVER_URI}/assets/${user?.picturePath}`} alt="@shadcn" /><AvatarFallback>CN</AvatarFallback></Avatar>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56">
                   <DropdownMenuLabel>{fullName}</DropdownMenuLabel>

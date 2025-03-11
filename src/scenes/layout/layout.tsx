@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 import Navbar from "./navbar";
 import Sidebar from "./sidebar";
-import PlayBar from "./playbar/index";
+import PlayBar from "./playbar";
 import { Toaster } from "@/components/ui/toaster";
 
 interface LayoutProps {

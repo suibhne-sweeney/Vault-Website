@@ -33,9 +33,11 @@ const ProfilePage = () => {
   const [followers, setFollowersProfile] = useState<UserDetail[] | null>(null);
   const isArtist = user?.userType !== "artist"; // this is some backwards logic just for testing dont actaully keep this
   const isUsersAccount = accountUser?._id === userId;
+  const SERVER_URI = import.meta.env.VITE_SERVER_URI;
+
 
   const getUser = async () => {
-    const response = await fetch(`http://localhost:3001/api/users/${userId}`, {
+    const response = await fetch(`${SERVER_URI}/api/users/${userId}`, {
       method: "GET",
       headers: {Authorization: `Bearer ${token}`}
     })
@@ -44,7 +46,7 @@ const ProfilePage = () => {
   }
 
   const getProfilesFollowing = async () => {
-    const response = await fetch(`http://localhost:3001/api/users/following/${userId}`, {
+    const response = await fetch(`${SERVER_URI}/api/users/following/${userId}`, {
       method: "GET",
       headers: {Authorization: `Bearer ${token}`}
     })
@@ -54,13 +56,17 @@ const ProfilePage = () => {
   } 
 
   const getProfilesFollowers = async () => {
-    const response = await fetch(`http://localhost:3001/api/users/followers/${userId}`, {
+    const response = await fetch(`${SERVER_URI}/api/users/followers/${userId}`, {
       method: "GET",
       headers: {Authorization: `Bearer ${token}`}
     })
     const data = await response.json();
     if(isUsersAccount) await dispatch(setFollowers({followers: data}));
     setFollowersProfile(data);
+  }
+
+  const setPageTitle = async () => {
+    document.title = `Profile - ${user?.firstName} ${user?.lastName}`
   }
   
 
@@ -83,22 +89,19 @@ const ProfilePage = () => {
     )
   }
 
+  if(!loading){
+    setPageTitle()
+  }
+
   return (
-    <div className="mx-auto py-6 px-6">
+    <div className="mx-auto py-6 px-6 h-full">
       <div className="flex flex-col md:flex-row items-center gap-6 mb-8">
         <div className="relative">
           <img
-            alt="Glow"
-            className="rounded-full object-cover w-48 h-48 md:w-64 md:h-64 filter: blur-lg saturate-100"
-            height="256"
-            src={`http://localhost:3001/assets/${user?.picturePath}`}
-            width="256"
-          />
-          <img
             alt="Profile Picture"
-            className="rounded-full object-cover w-48 h-48 md:w-64 md:h-64 absolute top-0"
+            className="rounded-full object-cover w-48 h-48 md:w-64 md:h-64"
             height="256"
-            src={`http://localhost:3001/assets/${user?.picturePath}`}
+            src={`${SERVER_URI}/assets/${user?.picturePath}`}
             width="256"
             id="profile-image"
           />
@@ -156,7 +159,7 @@ const ProfilePage = () => {
           </div>
         </div>
       </div>
-      <div className="custom-scrollbar overflow-y-scroll max-h-[450px]">
+      <div className="custom-scrollbar overflow-y-scroll max-h-full flex-grow h-[calc(96%-250px)]">
         <div className="space-y-4 mr-4">
           <div className=" text-xl">Public Playlists</div>
           {user?.playlists.length === 0
@@ -196,7 +199,7 @@ const ProfilePage = () => {
                 <div className="flex space-x-4 pb-4">
                   {following?.map((user) => (
                     <div className=" cursor-pointer" onClick={() => navigate(`/profile/${user._id}`)}>
-                      <img className="w-[150px] md:w-[200px] rounded-full" src={`http://localhost:3001/assets/${user?.picturePath}`} alt="Profile" />
+                      <img className="w-[150px] md:w-[200px] rounded-full" src={`${SERVER_URI}/assets/${user?.picturePath}`} alt="Profile" />
                       <p className="font-medium leading-none text-sm">{user.firstName}</p>
                     </div>
                   ))}

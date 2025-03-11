@@ -1,3 +1,13 @@
+## [1.9.0] - (2025-03-11)
+- fixed home page
+- changed playlist-artwork further
+- add soundwave component
+- add lang folder and en.json file
+- add context folder
+- add player-provider to context
+- moved theme-provider to context
+- add .env file
+
 ## [1.8.0] - (2024-12-15)
 - add command component
 - add dialog component

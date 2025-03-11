@@ -57,6 +57,7 @@ const songSchema = z.object({
 const SongForm = (props: {id: string, token: string}) => {
   const { id, token } = props;
   const { toast } = useToast()
+  const SERVER_URI = import.meta.env.VITE_SERVER_URI;
 
   const [step, setStep] = useState(0);
 
@@ -101,7 +102,7 @@ const SongForm = (props: {id: string, token: string}) => {
       // @ts-expect-error
       formData.append(value, values[value]) 
     }
-    const savedSongResponse = await fetch(`http://localhost:3001/api/users/${id}/songs`, {
+    const savedSongResponse = await fetch(`${SERVER_URI}/api/users/${id}/songs`, {
       method: "POST",
       body: formData,
       headers: {Authorization: `Bearer ${token}`}
@@ -119,7 +120,6 @@ const SongForm = (props: {id: string, token: string}) => {
         description: "There was a problem with your request.",
       })
     }
-
   }
     
   return (

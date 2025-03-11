@@ -2,31 +2,44 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { PlaylistArtwork } from "@/components/ui/playlist-artwork"
 import { Separator } from "@/components/ui/separator"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
-
-const playlists = [
-  {
-    name: "React Rendezvous",
-    artist: "Ethan Byte",
-    cover: `https://www.billboard.com/wp-content/uploads/2023/07/asap-rocky-long-live-asap-2013-billboard-1240.jpg?w=768`
-  },
-  {
-    name: "Async Awakenings",
-    artist: "Nina Netcode",
-    cover: `https://www.billboard.com/wp-content/uploads/media/ariana-grande-sweetner-album-art-2018-billboard-1240.jpg?w=768`
-  },
-  {
-    name: "The Art of Reusability",
-    artist: "Lena Logic",
-    cover: "https://www.billboard.com/wp-content/uploads/2022/03/20.-Joy-Division-‘Unknown-Pleasures-1979-album-art-billboard-1240.jpg?w=768"
-  },
-  {
-    name: "Stateful Symphonies",
-    artist: "Beth Binary",
-    cover: "https://www.billboard.com/wp-content/uploads/2022/03/19.-Judas-Priest-‘British-Steel-1980-album-art-billboard-1240.jpg?w=775"
-  },
-]
+import { useSelector } from "react-redux"
+import { PlaylistInterface, UserInterface } from "@/state/types"
+import { useEffect, useState } from "react"
 
 const HomePage = () => {
+  const userId = useSelector((state: UserInterface) => state.user?._id);
+  const token = useSelector((state: UserInterface) => state.token);
+  const [playlists, setPlaylists] = useState<PlaylistInterface[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const SERVER_URI = import.meta.env.VITE_SERVER_URI;
+
+  const getPlaylists = async () => {
+    const response = await fetch(`${SERVER_URI}/api/playlists/all/user/${userId}`, {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  
+    const data = await response.json(); // convert the response to JSON
+    setPlaylists(data);
+  };
+
+  useEffect(() => {
+    getPlaylists();
+    setIsLoading(false);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  if (isLoading){
+    return (
+      <div className="flex flex-col min-h-screen justify-center items-center">
+        <div className="inline-block h-16 w-16 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
+          <span className="sr-only">Loading...</span>
+        </div>
+        <p className="mt-2">Loading...</p>
+      </div>
+    );
+  }
   return (
     <div className="p-4 md:p-6 lg:p-8">
       <Tabs defaultValue="music" className="space-y-6">
@@ -58,7 +71,7 @@ const HomePage = () => {
             <div className="flex space-x-4 pb-4">
               {playlists.map((playlist) => (
                 <PlaylistArtwork
-                  key={playlist.name}
+                  key={playlist._id}
                   playlist={playlist}
                   className="w-[150px] md:w-[200px]"
                   aspectRatio="portrait"
@@ -71,10 +84,10 @@ const HomePage = () => {
           </ScrollArea>
           <div className="mt-6 space-y-1">
             <h2 className="text-2xl font-semibold tracking-tight">
-              Made for You
+            Top Artists
             </h2>
             <p className="text-sm text-muted-foreground">
-              Your personal playlists. Updated daily.
+              We pick only the best.
             </p>
           </div>
           <Separator className="my-4" />
