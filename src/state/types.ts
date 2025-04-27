@@ -40,9 +40,10 @@ export interface PlaylistInterface {
     },
     image: string,
     songs: SongInterface[],
-    visibility: "public" | "private",
+    visibility: string,
     likes: Record<string, boolean>,
-    collectionType: "playlist" | "album"
+    createdAt: Date,
+    updatedAt: Date,
 } 
 
 export interface SongInterface {

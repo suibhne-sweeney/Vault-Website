@@ -1,15 +1,17 @@
 import { useEffect, useRef, useState } from "react"
-import { useSelector } from "react-redux"
+import { useSelector, useDispatch } from "react-redux"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 import { Heart, MoreHorizontal, Pause, Play, Repeat, Shuffle, SkipBack, SkipForward, Volume2, VolumeOff } from 'lucide-react'
 import { UserInterface } from "@/state/types"
 import { useToast } from "@/hooks/use-toast";
 import { usePlayer } from "@/context/player-provider"
+import { setLikedSongs } from "@/state"
 
 const  PlayBar = () => {
   const loggedInUserId = useSelector((state: UserInterface) => state.user?._id)
   const token = useSelector((state: UserInterface) => state.token)
+  const likedSongs = useSelector((state: UserInterface) => state.likedSongs)
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(66);
@@ -24,18 +26,39 @@ const  PlayBar = () => {
     queue, 
     isPlaying  
   } = usePlayer();
-  const [isLiked, setIsLiked] = useState(false);
-  const [likes, setLikes] = useState<Record<string, boolean>>({});
   const SERVER_URI = import.meta.env.VITE_SERVER_URI;
+  const dispatch = useDispatch();
+  const isLiked = likedSongs?.some((song) => song._id === currentSong?._id);
 
-  useEffect(() => {
-    if (currentSong && loggedInUserId) {
-      setLikes(currentSong.likes);
-      setIsLiked(Boolean(likes[loggedInUserId]));
-    } else {
-      setIsLiked(false);
+  const getLikedSongs = async () => {
+    const response = await fetch(`${SERVER_URI}/api/songs/liked/${loggedInUserId}`, {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    const data = await response.json();
+    dispatch(setLikedSongs({likedSongs: data}))
+
+  }
+
+  const handelSongLike = async () => {
+    const response = await fetch(`${SERVER_URI}/api/songs/like/${currentSong?._id}`,{
+      method: "PATCH",
+      body: JSON.stringify({ userId: loggedInUserId }),
+      headers: { 
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
+    })
+
+    const data = await response.json();
+    if(data) await getLikedSongs();
+    else{
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description: "There was a problem with your request.",
+      })
     }
-  }, [currentSong, likes, loggedInUserId]);
+  }
 
   useEffect(() => {
     if (isPlaying) {
@@ -51,28 +74,6 @@ const  PlayBar = () => {
       audioRef.current.volume = volume / 100;
     }
   }, [volume]);
-
-  const handelSongLike = async () => {
-    const response = await fetch(`${SERVER_URI}/api/songs/like/${currentSong?._id}`, {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({userId: loggedInUserId})
-    });
-    const data = await response.json();
-
-    if(data){
-      setLikes(data.likes)
-      setIsLiked(Boolean(data.likes[loggedInUserId ?? ""]));
-    }else{
-      toast({
-        title: "Uh oh! Something went wrong.",
-        description: "There was a problem with your request.",
-      })
-    }
-  }
 
   const handleTimeUpdate = () => {
     if (audioRef.current) {
@@ -166,16 +167,16 @@ const  PlayBar = () => {
             <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
               <Shuffle className="h-4 w-4" />
             </Button>
-            <Button onClick={() => handleForwardBackward("backward")} variant="ghost" size="icon">
+            <Button accessKey="j" onClick={() => handleForwardBackward("backward")} variant="ghost" size="icon">
               <SkipBack className="h-5 w-5" />
             </Button>
-            <Button onClick={() => setIsPlaying(!isPlaying)} size="icon" className="bg-primary text-primary-foreground hover:bg-primary/20">
+            <Button accessKey="k" onClick={() => setIsPlaying(!isPlaying)} size="icon" className="bg-primary text-primary-foreground hover:bg-primary/20">
               {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
             </Button>
-            <Button onClick={() => handleForwardBackward("forward")} variant="ghost" size="icon">
+            <Button accessKey="l" onClick={() => handleForwardBackward("forward")} variant="ghost" size="icon">
               <SkipForward className="h-5 w-5" />
             </Button>
-            <Button onClick={toggleLoop} variant="ghost" size="icon" className={`text-muted-foreground hover:text-primary ${isLooping ? 'text-primary' : ''}`}>
+            <Button accessKey="P" onClick={toggleLoop} variant="ghost" size="icon" className={`text-muted-foreground hover:text-primary ${isLooping ? 'text-primary' : ''}`}>
               <Repeat className="h-4 w-4" />
             </Button>
           </div>
@@ -194,7 +195,7 @@ const  PlayBar = () => {
 
         {/* audio controls */}
         <div className="flex items-center justify-end space-x-4 w-1/4">
-          <Button onClick={toggleMute} variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
+          <Button accessKey="o" onClick={toggleMute} variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
             {isMute ? <VolumeOff className="h-4 w-4"/> : <Volume2 className="h-4 w-4" /> }
           </Button>
           <Slider

@@ -3,8 +3,9 @@ import { PlaylistArtwork } from "@/components/ui/playlist-artwork"
 import { Separator } from "@/components/ui/separator"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { useSelector } from "react-redux"
-import { PlaylistInterface, UserInterface } from "@/state/types"
+import { PlaylistInterface, UserDetail, UserInterface } from "@/state/types"
 import { useEffect, useState } from "react"
+import ProfilePicture from "../widgets/profile-picture"
 
 const HomePage = () => {
   const userId = useSelector((state: UserInterface) => state.user?._id);
@@ -12,6 +13,21 @@ const HomePage = () => {
   const [playlists, setPlaylists] = useState<PlaylistInterface[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const SERVER_URI = import.meta.env.VITE_SERVER_URI;
+  const [users, setUsers] = useState<UserDetail[]>([])
+  const setPageTitle = async () => {
+    document.title = `Vault`
+  }
+
+  const getUsers = async () => {
+    const response = await fetch(`${SERVER_URI}/api/users/all`, {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` } 
+    })
+
+    const data = await response.json();
+    if(data) setUsers(data);
+
+  }
 
   const getPlaylists = async () => {
     const response = await fetch(`${SERVER_URI}/api/playlists/all/user/${userId}`, {
@@ -25,7 +41,9 @@ const HomePage = () => {
 
   useEffect(() => {
     getPlaylists();
+    getUsers();
     setIsLoading(false);
+    setPageTitle()
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -93,16 +111,17 @@ const HomePage = () => {
           <Separator className="my-4" />
           <ScrollArea className="w-full whitespace-nowrap">
             <div className="flex space-x-4 pb-4">
-              {playlists.slice(0, 4).map((playlist) => (
-                <PlaylistArtwork
-                  key={playlist.name}
-                  playlist={playlist}
-                  className="w-[120px] md:w-[150px]"
-                  aspectRatio="round"
-                  width={150}
-                  height={150}
-                />
-              ))}
+              {users.map((user) => (
+                user.userType === "artist" && (
+                  <ProfilePicture 
+                    key={user._id}
+                    profile={user} 
+                    width={200}
+                    height={200}
+                    className="w-[150px] md:w-[200px]"
+                    aspectRatio="round"
+                  />
+              )))}
             </div>
             <ScrollBar orientation="horizontal" />
           </ScrollArea>
@@ -113,10 +132,10 @@ const HomePage = () => {
         >
           <div className="space-y-1">
             <h2 className="text-2xl font-semibold tracking-tight">
-              New Episodes
+              Hey looks pretty empty.
             </h2>
             <p className="text-sm text-muted-foreground">
-              Your favorite podcasts. Updated daily.
+              Podcasts will be coming soon.
             </p>
           </div>
           <Separator className="my-4" />

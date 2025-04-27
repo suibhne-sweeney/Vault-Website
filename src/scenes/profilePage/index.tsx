@@ -3,11 +3,11 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem,
 import { PlaylistArtwork } from "@/components/ui/playlist-artwork";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { UserDetail, UserInterface } from "@/state/types";
+import { PlaylistInterface, UserDetail, UserInterface } from "@/state/types";
 import { Dot, Link, MoreHorizontalIcon, Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
@@ -19,11 +19,12 @@ import {
 import SongForm from "./FormSongUpload";
 import { useToast } from "@/hooks/use-toast";
 import { setFollowers, setFollowing } from "@/state";
+import ProfilePicture from "../widgets/profile-picture";
+import ProfileUpdate from "./FormProfileUpdate";
 
 const ProfilePage = () => {
   const dispatch = useDispatch();
   const { toast } = useToast()
-  const navigate = useNavigate();
   const { userId } = useParams();
   const token = useSelector((state: UserInterface) => state.token);
   const accountUser = useSelector((state: UserInterface) => state.user)
@@ -31,10 +32,10 @@ const ProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const [following, setFollowingProfile] = useState<UserDetail[] | null>(null);
   const [followers, setFollowersProfile] = useState<UserDetail[] | null>(null);
-  const isArtist = user?.userType !== "artist"; // this is some backwards logic just for testing dont actaully keep this
+  const isArtist = user?.userType === "artist"; // this is some backwards logic just for testing dont actaully keep this
   const isUsersAccount = accountUser?._id === userId;
   const SERVER_URI = import.meta.env.VITE_SERVER_URI;
-
+  const [playlists, setPlaylists] = useState<PlaylistInterface[]>([]);
 
   const getUser = async () => {
     const response = await fetch(`${SERVER_URI}/api/users/${userId}`, {
@@ -43,6 +44,15 @@ const ProfilePage = () => {
     })
     const data = await response.json();
     setUser(data);
+  }
+
+  const getAllUserPlaylists = async () => {
+    const response = await fetch(`${SERVER_URI}/api/playlists/all/user/${userId}`, {
+      method: "GET",
+      headers: {Authorization: `Bearer ${token}`}
+    }) 
+    const data = await response.json();
+    setPlaylists(data);
   }
 
   const getProfilesFollowing = async () => {
@@ -72,6 +82,7 @@ const ProfilePage = () => {
 
   useEffect(() => {
     getUser();
+    getAllUserPlaylists();
     getProfilesFollowing();
     getProfilesFollowers();
     setLoading(false);
@@ -138,9 +149,19 @@ const ProfilePage = () => {
                   <DropdownMenuLabel>More Options</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
-                    <DropdownMenuItem className="cursor-pointer">
-                      <Pencil className="mr-2 h-4 w-4" />
-                      <span>Edit Profile</span>
+                    <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="cursor-pointer">
+                    <Dialog>
+                      <DialogTrigger className="flex flex-row items-center"><Pencil className="mr-2 h-4 w-4" /><span>Edit Profile</span></DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Edit Profile</DialogTitle>
+                          <DialogDescription>
+                            Let's change some things up!
+                          </DialogDescription>
+                          <ProfileUpdate id={`${userId}`} token={`${token}`}/>
+                        </DialogHeader>
+                      </DialogContent>
+                    </Dialog>
                     </DropdownMenuItem>
                     <DropdownMenuItem className="cursor-pointer" onClick={() => {
                       navigator.clipboard.writeText(window.location.href)
@@ -162,25 +183,23 @@ const ProfilePage = () => {
       <div className="custom-scrollbar overflow-y-scroll max-h-full flex-grow h-[calc(96%-250px)]">
         <div className="space-y-4 mr-4">
           <div className=" text-xl">Public Playlists</div>
-          {user?.playlists.length === 0
+          {playlists.length === 0
             ? (
               <p>No Playlists.</p>
             )
             : (
               <ScrollArea className="w-full whitespace-nowrap">
                 <div className="flex space-x-4 pb-4">
-                  {user?.playlists.slice(0, 5).map((playlist) => (
+                  {user?.playlists.map((playlist) => (
                     playlist.visibility === "public" && (
-                      <div onClick={() => navigate(`/playlist/${playlist._id}`)}>
-                        <PlaylistArtwork
-                          key={playlist.name}
-                          playlist={playlist}
-                          className="w-[150px] md:w-[200px] cursor-pointer"
-                          aspectRatio="portrait"
-                          width={200}
-                          height={200}
-                        />
-                      </div>
+                      <PlaylistArtwork
+                        key={playlist._id}
+                        playlist={playlist}
+                        className="w-[150px] md:w-[200px]"
+                        aspectRatio="portrait"
+                        width={200}
+                        height={200}
+                      />
                   )))}
                 </div>
                 <ScrollBar orientation="horizontal" />
@@ -198,10 +217,14 @@ const ProfilePage = () => {
               <ScrollArea className="w-full whitespace-nowrap">
                 <div className="flex space-x-4 pb-4">
                   {following?.map((user) => (
-                    <div className=" cursor-pointer" onClick={() => navigate(`/profile/${user._id}`)}>
-                      <img className="w-[150px] md:w-[200px] rounded-full" src={`${SERVER_URI}/assets/${user?.picturePath}`} alt="Profile" />
-                      <p className="font-medium leading-none text-sm">{user.firstName}</p>
-                    </div>
+                    <ProfilePicture 
+                      key={user._id}
+                      profile={user} 
+                      width={200}
+                      height={200}
+                      className="w-[150px] md:w-[200px]"
+                      aspectRatio="round"
+                     />
                   ))}
                 </div>
                 <ScrollBar orientation="horizontal" />
@@ -218,10 +241,14 @@ const ProfilePage = () => {
               <ScrollArea className="w-full whitespace-nowrap">
                 <div className="flex space-x-4 pb-4">
                   {followers?.map((user) => (
-                    <div className=" cursor-pointer" onClick={() => navigate(`/profile/${user._id}`)}>
-                      <img className="w-[150px] md:w-[200px] rounded-full" src={`http://localhost:3001/assets/${user?.picturePath}`} alt="Profile" />
-                      <p className="font-medium leading-none text-sm">{user.firstName}</p>
-                    </div>
+                    <ProfilePicture 
+                      key={user._id}
+                      profile={user} 
+                      width={200}
+                      height={200}
+                      className="w-[150px] md:w-[200px]"
+                      aspectRatio="round"
+                     />
                   ))}
                 </div>
                 <ScrollBar orientation="horizontal" />

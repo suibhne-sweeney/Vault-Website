@@ -25,6 +25,14 @@ export const authSlice = createSlice({
         setLogout: (state) => {
             state.user = null;
             state.token = null;
+            state.playlists = [];
+            state.followers = [];
+            state.following = [];
+            state.queue = [];
+            state.likedPlaylists = [];
+            state.likedSongs = [];
+            state.currentSong = null;
+            state.songOriginId = null;
         },
         setFollowers: (state, action) => {
             if(state.user){

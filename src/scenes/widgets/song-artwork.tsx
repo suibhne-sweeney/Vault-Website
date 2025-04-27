@@ -1,4 +1,4 @@
-const SongArtwork = async () => {
+const SongArtwork = () => {
     return (
         <h1>Hello, World!</h1>
     )

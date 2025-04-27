@@ -9,7 +9,10 @@ import { usePlayer } from "@/context/player-provider";
 import { useDispatch, useSelector } from "react-redux";
 import SoundWave from "@/components/ui/soundwave";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { setPlaylists } from "@/state";
+import { setLikedSongs, setPlaylists } from "@/state";
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
+import PlaylistUpload from "@/modals/playlistUpload";
 
 const PlaylistPage = () => {
   const { id } = useParams();
@@ -22,6 +25,11 @@ const PlaylistPage = () => {
   const dispatch = useDispatch();
   const [songDurations, setSongDurations] = useState<string[]>([])
   const SERVER_URI = import.meta.env.VITE_SERVER_URI;
+  const { toast } = useToast();
+  const likedSongs = useSelector((state: UserInterface) => state.likedSongs)
+  const loggedInUserId = useSelector((state: UserInterface) => state.user?._id);
+  const isLiked = likedSongs?.some((song) => song._id === currentSong?._id);
+
 
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
@@ -40,6 +48,57 @@ const PlaylistPage = () => {
   
     Promise.all(promises).then((durations) => setSongDurations(durations as string[]));
   };
+
+  const getLikedSongs = async () => {
+    const response = await fetch(`${SERVER_URI}/api/songs/liked/${loggedInUserId}`, {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    const data = await response.json();
+    dispatch(setLikedSongs({likedSongs: data}))
+
+  }
+
+  const handelSongLike = async () => {
+    const response = await fetch(`${SERVER_URI}/api/songs/like/${currentSong?._id}`,{
+      method: "PATCH",
+      body: JSON.stringify({ userId: loggedInUserId }),
+      headers: { 
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
+    })
+
+    const data = await response.json();
+    if(data) await getLikedSongs();
+    else{
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description: "There was a problem with your request.",
+      })
+    }
+  }
+
+  const handleAddToPlaylist = async (playlistId: string, songId: string) => {
+    const response = await fetch(`${SERVER_URI}/api/playlists/add/${songId}/${playlistId}`, {
+      method: "PATCH",
+      headers: { 
+        Authorization: `Bearer ${token}`
+      }
+    })
+    const data = await response.json();
+    if(data) {
+      toast({
+        title: "Success",
+        description: "Song added to playlist",
+      })
+    } else {
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description: "There was a problem with your request.",
+      })
+    }
+  }
 
   const getPlaylist = async () => {
     try {
@@ -109,14 +168,14 @@ const PlaylistPage = () => {
             alt="Glow"
             className="rounded-lg object-cover w-48 h-48 md:w-64 md:h-64 filter: blur-[10px] saturate-200"
             height="256"
-            src={"https://www.afrocharts.com/images/song_cover-500x500.png"}
+            src={playlist?.image == "https://www.afrocharts.com/images/song_cover-500x500.png" ? `https://www.afrocharts.com/images/song_cover-500x500.png` : `${SERVER_URI}/assets/${playlist?.image}`}
             width="256"
           />
           <img
             alt="Playlist cover"
             className="absolute rounded-lg object-cover w-48 h-48 md:w-64 md:h-64"
             height="256"
-            src={"https://www.afrocharts.com/images/song_cover-500x500.png"}
+            src={playlist?.image == "https://www.afrocharts.com/images/song_cover-500x500.png" ? `https://www.afrocharts.com/images/song_cover-500x500.png` : `${SERVER_URI}/assets/${playlist?.image}`}
             width="256"
           />
           <div className="flex flex-col items-center md:items-start">
@@ -172,7 +231,7 @@ const PlaylistPage = () => {
                     <MoreHorizontalIcon className="h-5 w-5" />
                     <span className="sr-only">More Options</span>
                   </Button>
-                </DropdownMenuTrigger>
+                </DropdownMenuTrigger >
                 <DropdownMenuContent className="w-40">
                   <DropdownMenuSub>
                     <DropdownMenuSubTrigger>
@@ -180,15 +239,25 @@ const PlaylistPage = () => {
                       Add to Playlist
                     </DropdownMenuSubTrigger>
                     <DropdownMenuSubContent className="w-48">
-                      <DropdownMenuItem>
-                        <PlusCircle className="mr-2 h-4 w-4" />
-                        New Playlist
+                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <Dialog>
+                          <DialogTrigger className="flex flex-row items-center"><PlusCircle className="mr-2 h-4 w-4" /> <p>New Playlist</p></DialogTrigger>
+                          <DialogContent onKeyDown={(e) => e.stopPropagation()}>
+                            <DialogHeader>
+                              <DialogTitle>Creat Playlist</DialogTitle>
+                              <DialogDescription>
+                                Let's make your playlist.
+                              </DialogDescription>
+                              <PlaylistUpload id={`${userId}`} token={`${token}`} songId={song._id}/>
+                            </DialogHeader>
+                          </DialogContent>
+                        </Dialog>
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      {playlists.map((song, index) => (
-                        <DropdownMenuItem key={index}>
+                      {playlists.map((playlist, index) => (
+                        <DropdownMenuItem className="cursor-pointer" onClick={() => handleAddToPlaylist(playlist._id, song._id)} key={index}>
                           <Music className="mr-2 h-4 w-4" />
-                          {song.name}
+                          {playlist.name}
                         </DropdownMenuItem>
                       ))}
                     </DropdownMenuSubContent>
@@ -197,8 +266,8 @@ const PlaylistPage = () => {
                   <DropdownMenuItem>Play Next</DropdownMenuItem>
                   <DropdownMenuItem>Play Later</DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <Heart className="mr-2 h-4 w-4" />
+                  <DropdownMenuItem onClick={() => handelSongLike()}>
+                    {isLiked ? <Heart className="fill-current mr-2 h-4 w-4" /> : <Heart className="mr-2 h-4 w-4" />}
                     Like
                   </DropdownMenuItem>
                   <DropdownMenuItem>
